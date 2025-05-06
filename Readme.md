@@ -63,7 +63,8 @@ Ready to get started? Follow these simple steps to set up **LegalRe** on your ma
    If you have no new data to add **SKIP this and the NEXT step** - the embeddings already exist.
    
    Documents upon which the current chroma db database was made on : 
-   https://drive.google.com/drive/u/1/folders/1wOyEXU9lTpYsakiXuc0Lo3GgD_zC-wnm
+   https://drive.google.com/drive/folders/1wOyEXU9lTpYsakiXuc0Lo3GgD_zC-wnm?usp=sharing
+   
 
 7. **Generate Embeddings** ✨
    Run the embedding script to process your PDFs and create the vector database:
