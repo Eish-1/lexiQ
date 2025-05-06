@@ -6,7 +6,7 @@
 
 ## 📚 **Legal Coverage**
 
-**LegalRe** works with the PDF documents you provide in the `pdf_data` directory. The accuracy and scope of its responses depend entirely on the content of those documents.
+**LexiQ** works with the PDF documents you provide in the `pdf_data` directory. The accuracy and scope of its responses depend entirely on the content of those documents.
 
 Then upon running this file in **/src/pdf_emb.py** , vector embeddings of these pdf's get created, which is what is stored in **chroma_db_legal_bot_part1** folder
 
