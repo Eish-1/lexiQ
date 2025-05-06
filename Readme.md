@@ -22,21 +22,21 @@ Ready to get started? Follow these simple steps to set up **LegalRe** on your ma
 
 2. **Install uv** 📂
 
-  Install uv and set up your Python project and environment
+Install uv and set up your Python project and environment
 
-   MacOS/Linux:
+MacOS/Linux:
 
-   ```bash
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   ```
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
-   Windows:
+Windows:
 
-   ```bash
-   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-   ```
+```bash
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
 
-   Make sure to restart your terminal afterwards to ensure that the uv command gets picked up.
+Make sure to restart your terminal afterwards to ensure that the uv command gets picked up.
 
 3. **Install Dependencies** 📦
 
@@ -46,27 +46,24 @@ Ready to get started? Follow these simple steps to set up **LegalRe** on your ma
 
 4. **Set Your Groq API Key** 🔑
 
-   Create a  `.env` file and add your Groq API key as such:
+   Create a `.env` file and add your Groq API key as such:
 
    ```bash
    GROQ_API_KEY=your-api-key-here
    ```
-
-   
 
 5. **Add Your Documents** 📄
 
    Create a folder named `pdf_data` in the root of the project directory.
    Place all your legal PDF documents inside this `pdf_data` folder.
 
-   If and only if you want to add new documents to existing files. 
+   If and only if you want to add new documents to existing files.
    If you have no new data to add **SKIP this and the NEXT step** - the embeddings already exist.
-   
-   Documents upon which the current chroma db database was made on : 
-   https://drive.google.com/drive/folders/1wOyEXU9lTpYsakiXuc0Lo3GgD_zC-wnm?usp=sharing
-   
 
-7. **Generate Embeddings** ✨
+   Documents upon which the current chroma db database was made on :
+   https://drive.google.com/drive/folders/1wOyEXU9lTpYsakiXuc0Lo3GgD_zC-wnm?usp=sharing
+
+6. **Generate Embeddings** ✨
    Run the embedding script to process your PDFs and create the vector database:
 
    ```bash
@@ -75,13 +72,13 @@ Ready to get started? Follow these simple steps to set up **LegalRe** on your ma
    cd ..
    ```
 
-8. **Run the Application** 🚀
+7. **Run the Application** 🚀
 
    ```bash
    uv run streamlit run app.py
    ```
 
-9. **Access the App** 🌐  
+8. **Access the App** 🌐  
    Open your browser and visit:
    ```bash
    http://127.0.0.1:8501
@@ -110,4 +107,4 @@ We are always looking for contributors! Whether you want to help with developmen
 
 ---
 
-**LegalRe** is more than just an AI tool—it's a framework for building custom RAG applications for specific document sets. Together, let's make information more accessible! ✨
+**LexiQ** is more than just an AI tool—it's a framework for building custom RAG applications for specific document sets. Together, let's make information more accessible! ✨
