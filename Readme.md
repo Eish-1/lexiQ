@@ -61,8 +61,11 @@ Ready to get started? Follow these simple steps to set up **LegalRe** on your ma
 
    If and only if you want to add new documents to existing files. 
    If you have no new data to add **SKIP this and the NEXT step** - the embeddings already exist.
+   
+   Documents upon which the current chroma db database was made on : 
+   https://drive.google.com/drive/u/1/folders/1wOyEXU9lTpYsakiXuc0Lo3GgD_zC-wnm
 
-6. **Generate Embeddings** ✨
+7. **Generate Embeddings** ✨
    Run the embedding script to process your PDFs and create the vector database:
 
    ```bash
@@ -71,13 +74,13 @@ Ready to get started? Follow these simple steps to set up **LegalRe** on your ma
    cd ..
    ```
 
-7. **Run the Application** 🚀
+8. **Run the Application** 🚀
 
    ```bash
    uv run streamlit run app.py
    ```
 
-8. **Access the App** 🌐  
+9. **Access the App** 🌐  
    Open your browser and visit:
    ```bash
    http://127.0.0.1:8501
