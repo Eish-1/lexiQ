@@ -1,0 +1,4 @@
+.venv/
+.env
+pdf_data
+temp_uploads
