@@ -103,7 +103,7 @@ Make sure to restart your terminal afterwards to ensure that the uv command gets
 
 ## 🤝 **Contribute**
 
-We are always looking for contributors! Whether you want to help with development, report issues, or request features, we welcome you to fork the repo and submit a pull request. Every contribution helps to make **LegalRe** better for everyone! 🚀
+We are always looking for contributors! Whether you want to help with development, report issues, or request features, we welcome you to fork the repo and submit a pull request. Every contribution helps to make **LexiQ** better for everyone! 🚀
 
 ---
 
