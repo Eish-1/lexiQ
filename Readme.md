@@ -6,7 +6,7 @@
 
 ## 📚 **Legal Coverage**
 
-**LegalRe** works with the PDF documents you provide in the `pdf_data` directory. The accuracy and scope of its responses depend entirely on the content of those documents.
+**LexiQ** works with the PDF documents you provide in the `pdf_data` directory. The accuracy and scope of its responses depend entirely on the content of those documents.
 
 Then upon running this file in **/src/pdf_emb.py** , vector embeddings of these pdf's get created, which is what is stored in **chroma_db_legal_bot_part1** folder
 
@@ -103,7 +103,7 @@ Make sure to restart your terminal afterwards to ensure that the uv command gets
 
 ## 🤝 **Contribute**
 
-We are always looking for contributors! Whether you want to help with development, report issues, or request features, we welcome you to fork the repo and submit a pull request. Every contribution helps to make **LegalRe** better for everyone! 🚀
+We are always looking for contributors! Whether you want to help with development, report issues, or request features, we welcome you to fork the repo and submit a pull request. Every contribution helps to make **LexiQ** better for everyone! 🚀
 
 ---
 
