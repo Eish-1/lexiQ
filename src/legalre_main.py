@@ -188,7 +188,15 @@ Answer:"""
               
 I don't have specific documents about this topic in my database. I'll provide a general response based on my training.
 
-Please note that this answer is NOT based on specific legal documents but on general knowledge."""),
+Please note that this answer is NOT based on specific legal documents but on general knowledge.
+
+When answering, please:
+1. Make it clear that you're using general knowledge, not specific document references
+2. Provide as accurate information as possible based on your training
+3. Structure your answer clearly with sections if applicable
+4. Always include a "References" section at the end, stating "General knowledge - no specific documents found in the knowledge base"
+
+This helps the user understand the source of your information."""),
               MessagesPlaceholder(variable_name="chat_history"),
               ("human", "{input}")
           ]
@@ -236,6 +244,15 @@ Please note that this answer is NOT based on specific legal documents but on gen
       if session_id not in LegalRe.store:
           LegalRe.store[session_id] = ChatMessageHistory()
       return LegalRe.store[session_id]
+    
+    def clear_history(self, session_id: str):
+        """Clear the conversation history for a specific session."""
+        if session_id in LegalRe.store:
+            # Remove the session history completely
+            LegalRe.store.pop(session_id)
+            logger.info(f"Cleared conversation history for session: {session_id}")
+        else:
+            logger.info(f"No history to clear for session: {session_id}")
     
     def conversational(self, query, session_id, filename_filter=None):
       # Pass filter to generator

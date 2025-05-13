@@ -21,7 +21,7 @@ logger = logging.getLogger('legalre')
 
 #This page implements the streamlit UI
 # Set page configuration
-st.set_page_config(page_title="LegalRe", page_icon="logo/logo.png", layout="wide")
+st.set_page_config(page_title="LexiQ", page_icon="logo/logo.png", layout="wide")
 
 # Custom CSS for better UI
 def add_custom_css():
@@ -142,8 +142,8 @@ if os.path.exists(logo_path):
         encoded_image = base64.b64encode(image_file.read()).decode()
     st.markdown(f"""
     <div class="st-title">
-        <img src="data:image/png;base64,{encoded_image}" alt="LegalRe Logo" class="logo">
-        <span>LegalRe - An AI Legal Assistant </span>
+        <img src="data:image/png;base64,{encoded_image}" alt="LexiQ Logo" class="logo">
+        <span>LexiQ - An AI Legal Assistant </span>
     </div>
     """, unsafe_allow_html=True)
 else:
@@ -325,30 +325,63 @@ with st.sidebar:
                 doc_text = get_pdf_text(temp_path)
                 
                 if doc_text:
+                    # Check if the document might be too large to handle properly
+                    if len(doc_text) > 500000:  # ~500K characters is quite large
+                        st.warning(f"This document is very large ({len(doc_text)/1000:.0f}K characters). It may be processed partially and results might be incomplete.")
+                    
                     # Split into chunks for processing
                     text_chunks = get_text_chunks(doc_text)
                     
                     if text_chunks:
-                        # Generate summary
-                        summary = generate_summary(text_chunks, groq_api_key)
-                        
-                        # Store in session state
-                        st.session_state.uploaded_document = doc_text
-                        st.session_state.document_summary = summary
-                        st.session_state.document_name = uploaded_file.name
-                        
-                        # Switch to document mode automatically
-                        st.session_state.active_mode = "document"
-                        
-                        # Add summary as a special message in the chat
-                        if "messages" in st.session_state:
-                            # Add a system message with the summary
-                            summary_message = {
-                                "role": "assistant",
-                                "content": f"📄 **Document Summary: {uploaded_file.name}**\n\n{summary}",
-                                "is_summary": True  # Custom flag to style differently
-                            }
-                            st.session_state.messages.append(summary_message)
+                        # Show progress to user for large documents
+                        with st.status("Generating document summary...") as status:
+                            # Generate summary
+                            summary = generate_summary(text_chunks, groq_api_key)
+                            status.update(label="Summary complete! Processing document for Q&A...", state="running")
+                            
+                            # Clear previous document conversation history when a new document is uploaded
+                            if "messages" in st.session_state:
+                                # Keep only non-document related messages
+                                st.session_state.messages = [msg for msg in st.session_state.messages 
+                                                           if not msg.get("is_summary", False) and 
+                                                           not (msg.get("document_related", False))]
+                            
+                            # Clean up old document embeddings
+                            if "document_embeddings" in st.session_state:
+                                try:
+                                    # Try to delete the collection if it exists
+                                    if hasattr(st.session_state, "doc_collection_name"):
+                                        logger.info(f"Cleaning up old document collection: {st.session_state.doc_collection_name}")
+                                        from langchain_chroma import Chroma
+                                        client = st.session_state.document_embeddings._client
+                                        if client.get_collection(st.session_state.doc_collection_name) is not None:
+                                            client.delete_collection(st.session_state.doc_collection_name)
+                                except Exception as e:
+                                    logger.warning(f"Error cleaning up old document collection: {e}")
+                                
+                                # Remove the reference
+                                st.session_state.document_embeddings = None
+                            
+                            # Store in session state
+                            st.session_state.uploaded_document = doc_text
+                            st.session_state.document_summary = summary
+                            st.session_state.document_name = uploaded_file.name
+                            
+                            # Switch to document mode automatically
+                            st.session_state.active_mode = "document"
+                            
+                            # Add summary as a special message in the chat
+                            if "messages" in st.session_state:
+                                # Add a system message with the summary
+                                summary_message = {
+                                    "role": "assistant",
+                                    "content": f"📄 **Document Summary: {uploaded_file.name}**\n\n{summary}",
+                                    "is_summary": True,  # Custom flag to style differently
+                                    "document_related": True
+                                }
+                                st.session_state.messages.append(summary_message)
+                            
+                            status.update(label="Document ready for Q&A!", state="complete")
                     else:
                         st.error("Could not process document - no text chunks generated.")
                 else:
@@ -365,6 +398,10 @@ with st.sidebar:
     # Mode selector (only show if a document is loaded)
     if st.session_state.uploaded_document is not None:
         st.divider()
+        
+        # Store previous mode before updating
+        previous_mode = st.session_state.active_mode
+        
         mode = st.radio(
             "Conversation Mode:",
             options=["Document Summary", "General Legal Q&A"],
@@ -373,7 +410,46 @@ with st.sidebar:
         )
         
         # Update active mode based on selection
-        st.session_state.active_mode = "document" if mode == "Document Q&A" else "general"
+        new_mode = "document" if mode == "Document Summary" else "general"
+        
+        # If mode has changed, clear conversation history for that mode
+        if previous_mode != new_mode:
+            # Clear the relevant part of conversation history
+            if "messages" in st.session_state:
+                if new_mode == "document":
+                    # Keep only general messages when switching to document mode
+                    # And add the document summary again
+                    st.session_state.messages = [msg for msg in st.session_state.messages 
+                                              if not msg.get("document_related", False)]
+                    
+                    # Re-add the document summary message
+                    if st.session_state.document_summary:
+                        summary_message = {
+                            "role": "assistant",
+                            "content": f"📄 **Document Summary: {st.session_state.document_name}**\n\n{st.session_state.document_summary}",
+                            "is_summary": True,
+                            "document_related": True
+                        }
+                        st.session_state.messages.append(summary_message)
+                else:
+                    # Keep only non-document messages when switching to general mode
+                    st.session_state.messages = [msg for msg in st.session_state.messages 
+                                              if not msg.get("document_related", False)]
+            
+            # Clear the appropriate session history in LegalRe
+            law.clear_history(f"{st.session_state.thread_id}_{new_mode}")
+            
+            # Update the mode
+            st.session_state.active_mode = new_mode
+            
+            # Show a message about switching modes
+            st.info(f"Switched to {mode} mode. Previous conversation context has been cleared.")
+            
+            # Force a rerun to refresh the page with the updated state
+            st.rerun()
+        else:
+            # Just update the mode if it hasn't changed
+            st.session_state.active_mode = new_mode
         
         # Show current mode
         if st.session_state.active_mode == "document":
@@ -387,7 +463,11 @@ if prompt:
         st.markdown(prompt)
 
     # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.session_state.messages.append({
+        "role": "user", 
+        "content": prompt, 
+        "document_related": st.session_state.active_mode == "document"
+    })
 
     # Different processing based on mode
     try:
@@ -400,45 +480,126 @@ if prompt:
                 if "document_embeddings" not in st.session_state or st.session_state.document_name != getattr(st.session_state, "last_embedded_doc", None):
                     logger.info(f"Generating embeddings for document: {st.session_state.document_name}")
                     
-                    # Split the document text into chunks
-                    doc_chunks = get_text_chunks(st.session_state.uploaded_document)
-                    
-                    # Create document objects with metadata
-                    from langchain.schema import Document
-                    doc_objects = [
-                        Document(
-                            page_content=chunk, 
-                            metadata={"filename": st.session_state.document_name, "source": "uploaded_document"}
-                        ) 
-                        for chunk in doc_chunks
-                    ]
-                    
-                    # Create temporary vector store with document embeddings
-                    from langchain_chroma import Chroma
-                    st.session_state.document_embeddings = Chroma.from_documents(
-                        documents=doc_objects,
-                        embedding=embeddings,  # Use the same embeddings model
-                        collection_name="temp_uploaded_doc"  # Name for temporary collection
-                    )
-                    
-                    # Mark which document was embedded
-                    st.session_state.last_embedded_doc = st.session_state.document_name
+                    try:
+                        # Split the document text into chunks
+                        doc_chunks = get_text_chunks(st.session_state.uploaded_document)
+                        
+                        if not doc_chunks:
+                            st.error("Unable to extract meaningful chunks from the document.")
+                            final_response = "I couldn't process this document properly. The document might be too complex or in a format I can't handle well."
+                            raise ValueError("No document chunks generated")
+                        
+                        # Create document objects with metadata
+                        from langchain.schema import Document
+                        doc_objects = [
+                            Document(
+                                page_content=chunk, 
+                                metadata={"filename": st.session_state.document_name, "source": "uploaded_document"}
+                            ) 
+                            for chunk in doc_chunks
+                        ]
+                        
+                        # Generate a unique collection ID for this document
+                        import hashlib
+                        import time
+                        doc_hash = hashlib.md5(st.session_state.document_name.encode()).hexdigest()[:10]
+                        collection_name = f"user_doc_{doc_hash}_{int(time.time())}"
+                        
+                        # Create a persistent path for document collections
+                        doc_persist_dir = os.path.join("temp_uploads", "doc_collections")
+                        if not os.path.exists(doc_persist_dir):
+                            os.makedirs(doc_persist_dir)
+                        
+                        # Create persistent vector store with document embeddings
+                        from langchain_chroma import Chroma
+                        st.session_state.document_embeddings = Chroma.from_documents(
+                            documents=doc_objects,
+                            embedding=embeddings,
+                            collection_name=collection_name,
+                            persist_directory=doc_persist_dir
+                        )
+                        
+                        # Mark which document was embedded
+                        st.session_state.last_embedded_doc = st.session_state.document_name
+                        st.session_state.doc_collection_name = collection_name
+                        logger.info(f"Successfully created document embeddings with {len(doc_chunks)} chunks in collection {collection_name}")
+                        
+                    except Exception as e:
+                        logger.error(f"Error creating document embeddings: {e}")
+                        st.error(f"Error creating document embeddings: {e}")
+                        final_response = f"I had trouble processing your document. Error: {str(e)}"
+                        # Default to general mode if document processing fails
+                        st.session_state.active_mode = "general"
+                        raise e
                 
-                # Use the document-specific filter
-                result = law.conversational(
-                    query=prompt, 
-                    session_id=f"{thread_id}_document",  # Use separate session ID for document context
-                    filename_filter=st.session_state.document_name  # Filter by document name
+                # Use our own custom RAG for document-specific queries
+                from langchain.chains import create_retrieval_chain
+                from langchain.chains.combine_documents import create_stuff_documents_chain
+                from langchain_core.prompts import ChatPromptTemplate
+
+                # Create a document-specific prompt
+                doc_prompt_template = ChatPromptTemplate.from_template("""
+                You are a legal assistant analyzing a specific document uploaded by the user.
+                
+                Document Summary:
+                {summary}
+                
+                <document_content>
+                {context}
+                </document_content>
+                
+                Answer the following question based ONLY on the information in the document above.
+                If the answer is not in the document, say "I don't see information about that in the document."
+                
+                Always reference specific parts of the document in your answer to show where you found the information.
+                
+                Always conclude your answer with:
+                
+                References:
+                - User-uploaded document: {document_name}
+                
+                Question: {input}
+                """)
+                
+                # Create a chain to retrieve from the document embeddings
+                document_chain = create_stuff_documents_chain(llm, doc_prompt_template)
+                retriever = st.session_state.document_embeddings.as_retriever(
+                    search_kwargs={"k": 5}
                 )
+                retrieval_chain = create_retrieval_chain(retriever, document_chain)
+                
+                # Run the chain on the query
+                response = retrieval_chain.invoke({
+                    "input": prompt,
+                    "summary": st.session_state.document_summary,
+                    "document_name": st.session_state.document_name
+                })
+                
+                # Extract the answer and clean it up
+                raw_response = response.get("answer", "I couldn't process that document query.")
+                
+                # Remove any <think> tags and their contents (some models include reasoning this way)
+                import re
+                final_response = re.sub(r"<think>.*?</think>\s*", "", raw_response, flags=re.IGNORECASE | re.DOTALL).strip()
             else:
-                # General mode: Use the pre-loaded vector store
+                # GENERAL LEGAL Q&A MODE
+                # Use the LegalRe class with a fresh session ID to avoid context contamination
+                # We'll create a session ID that's unique to the general mode to avoid mixing with document mode
+                general_session_id = f"{thread_id}_general"
+                
+                # Make sure we're not filtering by any document
                 result = law.conversational(
                     query=prompt,
-                    session_id=thread_id,  # Use main session ID
-                    filename_filter=None  # No filter - search all documents
+                    session_id=general_session_id,  # Use a separate session for general queries
+                    filename_filter=None  # No filter - search all documents in RAG
                 )
-            
-            final_response = result
+                
+                # Ensure the response doesn't mention the uploaded document
+                if "Context document provided by the user" in result:
+                    # Replace incorrect reference with proper citation
+                    result = result.replace("Context document provided by the user", "Legal documents in knowledge base")
+                
+                final_response = result
     except Exception as e:
         st.error(f"An error occurred: {e}")
         logger.error(f"Error during conversation: {e}")
@@ -449,4 +610,8 @@ if prompt:
         st.markdown(final_response)
     
     # Add to chat history
-    st.session_state.messages.append({"role": "assistant", "content": final_response})
+    st.session_state.messages.append({
+        "role": "assistant", 
+        "content": final_response, 
+        "document_related": st.session_state.active_mode == "document"
+    })
