@@ -12,9 +12,37 @@ Then upon running this file in **/src/pdf_emb.py** , vector embeddings of these 
 
 Then all that is required is to use **uv** installer , first you will have to set it up and then follow the steps below for successful setup.
 
+A concise guide for developers on how to set this project up and run it is provided later below. 
+
+## How the application looks like
+
+![image](https://github.com/user-attachments/assets/940e7c33-3638-482f-a187-42d7991f993a)
+
+*Query:*
+*Hi, I recently moved out of a rented apartment, but my landlord is refusing to return my security deposit. He claims there was damage, but didn't provide any proof or receipts. It's been over 45 days. What are my legal rights and what steps can I take to get my money back?*
+
+*Response: *
+
+![image](https://github.com/user-attachments/assets/894dd687-0471-4b84-9440-2e717994ed9f)
+
+![image](https://github.com/user-attachments/assets/d81f0055-a36d-4135-988d-5b679d903184)
+
+*Say an user uploads a legal document, the bot will also summarize the document and would explain what the document is about concisely:*
+
+![image](https://github.com/user-attachments/assets/28c8d2bf-24fe-4031-a701-e3b32340aac4)
+
+*After taking around 10 ~ 40 seconds (Based on the size of the document) a response will be delivered*
+
+*Here as an example I had uploaded a legal text document in pdf format. The user has also the ability to switch between two modes as well, either the initial QnA mode or the document summary mode as you can see below*
+
+![image](https://github.com/user-attachments/assets/8281ae2f-6a39-4b9f-9943-26c220d2b25b)
+
+*So this is the way the project is right now, and in the future I plan to deploy it and anyone would be able to access it through web!*
+
+
 ---
 
-## 💻 **Developer Quick Start Guide**
+# 💻 **Developer Quick Start Guide**
 
 Ready to get started? Follow these simple steps to set up **LegalRe** on your machine:
 
