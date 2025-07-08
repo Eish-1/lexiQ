@@ -14,6 +14,19 @@ Then all that is required is to use **uv** installer , first you will have to se
 
 A concise guide for developers on how to set this project up and run it is provided later below. 
 
+## About LexiQ
+
+ LexiQ integrates a dual-mode pipeline: a summarization module that 
+generates concise, plain-language synopses of user-uploaded PDF documents, and a 
+retrieval-augmented Q&A system built on a preloaded corpus of statutes, case laws, and 
+regulations. The system is implemented in Python 3.11+ using Streamlit for the user 
+interface, LangChain (with Groq LLM and Hugging Face embeddings), and ChromaDB for 
+vector storage. Documents are parsed and chunked with PyMuPDF, embedded with all
+MiniLM-L6-v2, and re-ranked using a cross-encoder (ms-marco-MiniLM-L-6-v2). LexiQ 
+first retrieves contextually relevant excerpts for each query, synthesizes polished, Markdown
+formatted responses with source citations, and falls back to its internal knowledge only when 
+no documents match. 
+
 ## How the application looks like
 
 ![image](https://github.com/user-attachments/assets/940e7c33-3638-482f-a187-42d7991f993a)
