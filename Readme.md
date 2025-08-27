@@ -1,6 +1,6 @@
 # ⚖️ **LexiQ: AI-Powered Legal Assistant**
 
-### _Bridging the Gap Between People and Legal Access_ 🌍
+### _Bridging the Gap Between People and Legal Access_ 
 
 ---
 
