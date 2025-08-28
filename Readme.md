@@ -84,6 +84,10 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 Make sure to restart your terminal afterwards to ensure that the uv command gets picked up.
 
+```bash
+python -m venv .venv
+```
+
 3. **Install Dependencies** 📦
 
    ```bash
@@ -98,7 +102,15 @@ Make sure to restart your terminal afterwards to ensure that the uv command gets
    GROQ_API_KEY=your-api-key-here
    ```
 
-5. **Add Your Documents** 📄
+5. **Activate your virtual environment**
+
+   After installing the necessary packages using uv package manager, activate
+
+   ```bash
+   .venv/Scripts/activate
+   ```
+
+7. **Add Your Documents** 📄
 
    Create a folder named `pdf_data` in the root of the project directory.
    Place all your legal PDF documents inside this `pdf_data` folder.
@@ -109,7 +121,7 @@ Make sure to restart your terminal afterwards to ensure that the uv command gets
    Documents upon which the current chroma db database was made on :
    https://drive.google.com/drive/folders/1wOyEXU9lTpYsakiXuc0Lo3GgD_zC-wnm?usp=sharing
 
-6. **Generate Embeddings** ✨
+8. **Generate Embeddings** ✨
    Run the embedding script to process your PDFs and create the vector database:
 
    ```bash
@@ -118,10 +130,14 @@ Make sure to restart your terminal afterwards to ensure that the uv command gets
    cd ..
    ```
 
-7. **Run the Application** 🚀
+9. **Run the Application** 🚀
 
    ```bash
    uv run streamlit run app.py
+   ```
+   or
+    ```bash
+   python -m streamlit run app.py
    ```
 
 8. **Access the App** 🌐  
@@ -147,10 +163,10 @@ Make sure to restart your terminal afterwards to ensure that the uv command gets
 
 ---
 
-## 🤝 **Contribute**
+## **Contribute**
 
-We are always looking for contributors! Whether you want to help with development, report issues, or request features, we welcome you to fork the repo and submit a pull request. Every contribution helps to make **LexiQ** better for everyone! 🚀
+Open for contributors! Whether you want to help with development, report issues, or request features, you are welcomed to fork the repo and submit a pull request. Every contribution helps to make **LexiQ** better for everyone! 
 
 ---
 
-**LexiQ** is more than just an AI tool—it's a framework for building custom RAG applications for specific document sets. Together, let's make information more accessible! ✨
+**LexiQ** is more than just an AI tool—it's a framework for building **custom RAG applications** for specific document sets. Together, let's make information more accessible! 
