@@ -84,14 +84,18 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 Make sure to restart your terminal afterwards to ensure that the uv command gets picked up.
 
+In the location where you have cloned this repository go to that directory and create a virtual environment for your packages
+
 ```bash
 python -m venv .venv
 ```
 
-3. **Install Dependencies** 📦
+3. **Activate your virtual environment**
+
+   before installing the necessary packages using uv package manager, activate the .venv environment (You will have to do so to run the web app again as well)
 
    ```bash
-   uv sync
+   .venv/Scripts/activate
    ```
 
 4. **Set Your Groq API Key** 🔑
@@ -102,15 +106,14 @@ python -m venv .venv
    GROQ_API_KEY=your-api-key-here
    ```
 
-5. **Activate your virtual environment**
-
-   After installing the necessary packages using uv package manager, activate
+5. **Install Dependencies** 📦
 
    ```bash
-   .venv/Scripts/activate
+   uv sync
    ```
 
-7. **Add Your Documents** 📄
+
+6. **Add Your Documents** 📄
 
    Create a folder named `pdf_data` in the root of the project directory.
    Place all your legal PDF documents inside this `pdf_data` folder.
@@ -121,7 +124,7 @@ python -m venv .venv
    Documents upon which the current chroma db database was made on :
    https://drive.google.com/drive/folders/1wOyEXU9lTpYsakiXuc0Lo3GgD_zC-wnm?usp=sharing
 
-8. **Generate Embeddings** ✨
+7. **Generate Embeddings** ✨
    Run the embedding script to process your PDFs and create the vector database:
 
    ```bash
@@ -130,7 +133,7 @@ python -m venv .venv
    cd ..
    ```
 
-9. **Run the Application** 🚀
+8. **Run the Application** 🚀
 
    ```bash
    uv run streamlit run app.py
@@ -140,7 +143,7 @@ python -m venv .venv
    python -m streamlit run app.py
    ```
 
-8. **Access the App** 🌐  
+9. **Access the App** 🌐  
    Open your browser and visit:
    ```bash
    http://127.0.0.1:8501
